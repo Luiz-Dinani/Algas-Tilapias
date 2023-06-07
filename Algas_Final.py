@@ -6,6 +6,8 @@ import sys
 import numpy as np
 import mysql.connector
 import tracemalloc as tm
+from azure.iot.device import IoTHubDeviceClient, Message
+import json
 AUMENTO_PESO_DIARIO = 0.00545 #kg ((800g - 200g)/110dias) / 1000. --Valor por tilápia
 #Mortalidade é calculada por ciclo de engorda, que dura 110 dias.
 MORTALIDADE_DIARIA_BAIXA = 1 - (0.005/110) #1 - random.uniform(0.01, 0.05)/90 
@@ -15,6 +17,19 @@ MORTALIDADE_DIARIA_ALTISSIMA = 1 - 1/15 #Toda a produção pode morrer em 15 dia
 TAMANHO_UTIL_TANQUE =  40 #m³ -- 10 Tanques-Rede com 4 m³
 #Valores dos Conceitos de biomassa para uma produção do tipo tanques-rede de até 6m³
 CAPACIDADE_SUPORTE_TANQUE = 3000
+def send_message(dados):
+    client = IoTHubDeviceClient.create_from_connection_string('HostName=iot-projeto.azure-devices.net;DeviceId=iot-device;SharedAccessKey=DjwshpAokazakYceRvN6ZioIH0XUe7l4eGznWSq8cFQ=')
+    dados_mensagem = json.dumps(dados)
+    message = Message(dados_mensagem)
+    message.content_type = 'application/json'
+    message.content_encoding = 'utf-8'
+    client.send_message(message)
+def send_message_pedro(client: IoTHubDeviceClient, dados: list):
+    dados_mensagem = json.dumps(dados)
+    message = Message(dados_mensagem)
+    message.content_type = 'application/json'
+    message.content_encoding = 'utf-8'
+    client.send_message(message)
 def calcularQualidadeAgua(temperatura, amonia, ph):
     #Ínidice de 1 a 4 onde o ideal é 4, 3 = Crescimento Lento, 2 = Sem repoducao e 1 = Mortalidade Altissima
     #Verifica se o pH está fora do range adequado
@@ -111,7 +126,7 @@ def gerarDados():
     cap_quant=[]
     cap_peso=[]
     amonia = 0
-    for x in range(1, 6, 1):
+    for x in range(1, 366, 1):
         day = init_day + datetime.timedelta(days=+x)
         # Divisor de período - Anual
         y = x % 367
@@ -212,11 +227,11 @@ def gerarDados():
             qualidadeAgua = 4
             qtdPeixes = 15_000
             pesoMedioPeixes = 0.200
-        cap_amonia.append(amonia)
+        cap_amonia.append(round(amonia,2))
         cap_biomassa.append(biomassaAtualTanque)
         cap_qualid.append(qualidadeAgua)
         cap_quant.append(int(round(qtdPeixes,0)))
-        cap_peso.append(pesoMedioPeixes)
+        cap_peso.append(round(pesoMedioPeixes,2))
         cap_dias.append(day)
     return [cap_oxi, cap_temp, cap_ph, cap_sal, cap_turb, cap_vis, cap_amonia, cap_peso, cap_biomassa, cap_qualid, cap_quant, cap_dias]
 
@@ -234,24 +249,40 @@ memoriaUsada = tm.get_traced_memory()
 tm.stop()    
 tempoDecorrido = time.time() - tempoInicio
 
-teste=[]
-for i in range(5):
-    dados=[]
+dados=[]
+for i in range(365):
     payload = {
         'messageId': i+1,
-        'oxi':vetorDados[0][i],
-        'temp':vetorDados[1][i],
+        'oxigenio':vetorDados[0][i],
+        'temperatura':vetorDados[1][i],
         'ph':vetorDados[2][i],
-        'sal':vetorDados[3][i],
-        'turb':vetorDados[4][i],
-        'vis':vetorDados[5][i],
+        'salinidade':vetorDados[3][i],
+        'turbidez':vetorDados[4][i],
+        'visibilidade':vetorDados[5][i],
         'amonia':vetorDados[6][i],
-        'peso':vetorDados[7][i],
+        'peso_peixe':vetorDados[7][i],
         'biomassa':vetorDados[8][i],
-        'qualid':vetorDados[9][i],
-        'quant':vetorDados[10][i],
-        'dias':vetorDados[11][i],
+        'qualidade_agua':vetorDados[9][i],
+        'quantidade_peixe':vetorDados[10][i],
+        'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
     }
-    teste.append(payload)
-
-print(teste)
+    dados.append(payload)
+send_message(dados)
+client = IoTHubDeviceClient.create_from_connection_string('HostName=pedroHub.azure-devices.net;DeviceId=pedroDevice;SharedAccessKey=yKhpMVEJdRDJ+CBWzOnjr+Ql2dd939ZZGjx6CfMGY+w=')
+for i in range(5):
+    payload = {
+        'messageId': i+1,
+        'oxigenio':vetorDados[0][i],
+        'temperatura':vetorDados[1][i],
+        'ph':vetorDados[2][i],
+        'salinidade':vetorDados[3][i],
+        'turbidez':vetorDados[4][i],
+        'visibilidade':vetorDados[5][i],
+        'amonia':vetorDados[6][i],
+        'peso_peixe':vetorDados[7][i],
+        'biomassa':vetorDados[8][i],
+        'qualidade_agua':vetorDados[9][i],
+        'quantidade_peixe':vetorDados[10][i],
+        'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
+    }
+    send_message_pedro(client, payload)
