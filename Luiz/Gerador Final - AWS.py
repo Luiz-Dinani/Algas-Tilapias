@@ -16,8 +16,8 @@ def conectarBancoDeDados():
         password="998072Lu"
     )
     cursor = db.cursor()
-    cursor.execute("create database if not exists tilapiasOtimizado")
-    cursor.execute("use tilapiasOtimizado")
+    cursor.execute("create database if not exists tilapias")
+    cursor.execute("use tilapias")
     return db
 
 def criarTabelas(db):
@@ -35,7 +35,8 @@ def criarTabelas(db):
         INSERT INTO ipsMaquinas values ("44.215.14.181", "algas1"),
                                        ("23.22.238.8", "algas2"),
                                        ("187.34.208.124", "notebook Santana"),
-                                       ("138.36.58.189", "Taubate");
+                                       ("138.36.58.189", "Taubate"),
+                                       ("localhost", "localhost");
 
         """)
     except Exception:
@@ -235,7 +236,7 @@ def inserirDadosExecucao(db, dadosExecucao, ipOrigem):
 
 def main():
     ipOrigem = sp.check_output(["curl", "http://checkip.amazonaws.com"])
-    ipOrigem = ipOrigem.decode().strip()
+    ipOrigem = "localhost" #ipOrigem.decode().strip()
     tm.start()    
     tempoInicio = time.time()
 
@@ -250,6 +251,5 @@ def main():
     tempoDecorrido = time.time() - tempoInicio
     dadosExecucao = (memoriaUsada, numAmostras, tempoDecorrido)
     inserirDadosExecucao(db, dadosExecucao, ipOrigem)
-
 
 main()

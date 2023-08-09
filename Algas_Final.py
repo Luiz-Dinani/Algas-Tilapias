@@ -8,6 +8,8 @@ import mysql.connector
 import tracemalloc as tm
 from azure.iot.device import IoTHubDeviceClient, Message
 import json
+
+#region constantes
 AUMENTO_PESO_DIARIO = 0.00545 #kg ((800g - 200g)/110dias) / 1000. --Valor por tilápia
 #Mortalidade é calculada por ciclo de engorda, que dura 110 dias.
 MORTALIDADE_DIARIA_BAIXA = 1 - (0.005/110) #1 - random.uniform(0.01, 0.05)/90 
@@ -17,6 +19,8 @@ MORTALIDADE_DIARIA_ALTISSIMA = 1 - 1/15 #Toda a produção pode morrer em 15 dia
 TAMANHO_UTIL_TANQUE =  40 #m³ -- 10 Tanques-Rede com 4 m³
 #Valores dos Conceitos de biomassa para uma produção do tipo tanques-rede de até 6m³
 CAPACIDADE_SUPORTE_TANQUE = 3000
+#endregion
+
 def send_message(dados):
     client = IoTHubDeviceClient.create_from_connection_string('HostName=iot-projeto.azure-devices.net;DeviceId=iot-device;SharedAccessKey=DjwshpAokazakYceRvN6ZioIH0XUe7l4eGznWSq8cFQ=')
     dados_mensagem = json.dumps(dados)
@@ -30,6 +34,7 @@ def send_message_pedro(client: IoTHubDeviceClient, dados: list):
     message.content_type = 'application/json'
     message.content_encoding = 'utf-8'
     client.send_message(message)
+
 def calcularQualidadeAgua(temperatura, amonia, ph):
     #Ínidice de 1 a 4 onde o ideal é 4, 3 = Crescimento Lento, 2 = Sem repoducao e 1 = Mortalidade Altissima
     #Verifica se o pH está fora do range adequado
@@ -109,6 +114,8 @@ def calcularAmonia(temperatura, pesoMedioPeixes, qtdPeixes, amonia):
     return amonia
 
 def gerarDados():
+    qtdPeixes = 15_000 #Unidades
+    pesoMedioPeixes = 0.200 #kg
     oxigen = 9.5
     temp = 0
     day = datetime.date.today()
@@ -135,7 +142,7 @@ def gerarDados():
 
         # Gerador de temperatura:
         if (y < 92):
-            #Temperatura - trimestre 1
+            #region Temperatura - trimestre 1
             temp = r.randint(24, 31)
             if (temp > 29):
                 # Gerador de oxigênio dissolvido na água - MÁXIMO:
@@ -146,8 +153,9 @@ def gerarDados():
             else:
                 # Gerador de oxigênio dissolvido na água - MÍNIMO:
                 cap_oxi.append(round(r.uniform((oxigen - 1.7), (oxigen + 0.8)), 1))
+            #endregion
         elif (y > 91 and y < 183):
-            #Temperatura - trimestre
+            #region Temperatura - trimestre 2
             temp = r.randint(19, 27)
             if (temp > 25):
                 # Gerador de oxigênio dissolvido na água - MÁXIMO:
@@ -158,8 +166,9 @@ def gerarDados():
             else:
                 # Gerador de oxigênio dissolvido na água - MÍNIMO:
                 cap_oxi.append(round(r.uniform((oxigen - 1.2), (oxigen + 1)), 1))
+            #endregion
         elif (y > 182 and y < 275):
-            #Temperatura - trimestre 3
+            #region Temperatura - trimestre 3
             temp = r.randint(17, 26)
             if (temp > 25):
                 # Gerador de oxigênio dissolvido na água - MÁXIMO:
@@ -170,8 +179,9 @@ def gerarDados():
             else:
                 # Gerador de oxigênio dissolvido na água - MÍNIMO:
                 cap_oxi.append(round(r.uniform((oxigen - 1.2), (oxigen + 1)), 1))
+            #endregion
         else:
-            #Temperatura - trimestre 4
+            #region Temperatura - trimestre 4
             temp = r.randint(21, 29)
             if (temp > 25 and temp < 30):
                 # Gerador de oxigênio dissolvido na água - MÁXIMO:
@@ -182,17 +192,22 @@ def gerarDados():
             else:
                 # Gerador de oxigênio dissolvido na água - MÍNIMO:
                 cap_oxi.append(round(r.uniform((oxigen - 1.2), (oxigen + 1)), 1))
+            #endregion
+
         cap_temp.append(temp)
+
         ph_total = []
         for p in range(1, 25):
             ph_total.append(round(r.uniform(6.0, 8.5), 1))
         results = sum(ph_total)
         cap_ph.append(round(results / len(ph_total), 1))
+        
         sal_total = []
         for s in range(1, 25):
             sal_total.append(round(r.uniform(25, 35), 1))
         result = sum(sal_total)
         cap_sal.append(round(result / len(sal_total), 1))
+        
         turb_total = []
         for t in range(1, 25):
             turb_total.append(round(r.uniform(10, 20), 1))
@@ -207,31 +222,34 @@ def gerarDados():
                 cap_vis.append(geracao_vis(int(round(cap_vis[-1]+1)), 40))
             else:
                 cap_vis.append(cap_vis[-1])
-        qtdPeixes = 15_000 #Unidades
-        pesoMedioPeixes = 0.200 #kg
+
         temperatura = cap_temp[-1] #ºC cap_temp[-1]
-        #minClorof, maxClorof = 25, 50 #ug/L
         minAmonia, maxAmonia = 0.05, 1 #mg/L
         if x==1:
             amonia = r.uniform(minAmonia, maxAmonia)
         else:
             amonia = calcularAmonia(temperatura, pesoMedioPeixes, qtdPeixes, amonia)
+        
         biomassaAtualTanque = pesoMedioPeixes*qtdPeixes/TAMANHO_UTIL_TANQUE
         qualidadeAgua = calcularQualidadeAgua(temperatura, amonia, cap_ph[-1]) 
         pesoMedioPeixes, qtdPeixes = calcularPesoEQtdPeixes(qualidadeAgua, biomassaAtualTanque, pesoMedioPeixes, qtdPeixes)
+        
         qualidadeAgua = 4 if qualidadeAgua > 4 else 1 if qualidadeAgua < 1 else qualidadeAgua
+        
         pesoMedioPeixes = pesoMedioPeixes if pesoMedioPeixes < 800 else pesoMedioPeixes + r.uniform(-5, -15)
         amonia = 0 if amonia < 0 else amonia
+
         if(x % 111 == 0): #Acabou o ciclo de engorda, os peixes sao removidos, a agua recebe manutencao, fica em repouso e sao colocados novos peixes
             amonia = 0.00
             qualidadeAgua = 4
             qtdPeixes = 15_000
             pesoMedioPeixes = 0.200
+
         cap_amonia.append(round(amonia,2))
         cap_biomassa.append(biomassaAtualTanque)
         cap_qualid.append(qualidadeAgua)
         cap_quant.append(int(round(qtdPeixes,0)))
-        cap_peso.append(round(pesoMedioPeixes,2))
+        cap_peso.append(round(pesoMedioPeixes,6))
         cap_dias.append(day)
     return [cap_oxi, cap_temp, cap_ph, cap_sal, cap_turb, cap_vis, cap_amonia, cap_peso, cap_biomassa, cap_qualid, cap_quant, cap_dias]
 
@@ -242,47 +260,54 @@ def geracao_vis(inicio, fim):
     results = sum(vis_total)
     return round(results / len(vis_total), 1)
 
-tm.start()    
-tempoInicio = time.time()
-vetorDados = gerarDados()
-memoriaUsada = tm.get_traced_memory()
-tm.stop()    
-tempoDecorrido = time.time() - tempoInicio
+def main():
+    tm.start()    
+    tempoInicio = time.time()
+    vetorDados = gerarDados()
+    memoriaUsada = tm.get_traced_memory()
+    tm.stop()    
+    tempoDecorrido = time.time() - tempoInicio
 
-dados=[]
-for i in range(365):
-    payload = {
-        'messageId': i+1,
-        'oxigenio':vetorDados[0][i],
-        'temperatura':vetorDados[1][i],
-        'ph':vetorDados[2][i],
-        'salinidade':vetorDados[3][i],
-        'turbidez':vetorDados[4][i],
-        'visibilidade':vetorDados[5][i],
-        'amonia':vetorDados[6][i],
-        'peso_peixe':vetorDados[7][i],
-        'biomassa':vetorDados[8][i],
-        'qualidade_agua':vetorDados[9][i],
-        'quantidade_peixe':vetorDados[10][i],
-        'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
-    }
-    dados.append(payload)
-send_message(dados)
-client = IoTHubDeviceClient.create_from_connection_string('HostName=pedroHub.azure-devices.net;DeviceId=pedroDevice;SharedAccessKey=yKhpMVEJdRDJ+CBWzOnjr+Ql2dd939ZZGjx6CfMGY+w=')
-for i in range(5):
-    payload = {
-        'messageId': i+1,
-        'oxigenio':vetorDados[0][i],
-        'temperatura':vetorDados[1][i],
-        'ph':vetorDados[2][i],
-        'salinidade':vetorDados[3][i],
-        'turbidez':vetorDados[4][i],
-        'visibilidade':vetorDados[5][i],
-        'amonia':vetorDados[6][i],
-        'peso_peixe':vetorDados[7][i],
-        'biomassa':vetorDados[8][i],
-        'qualidade_agua':vetorDados[9][i],
-        'quantidade_peixe':vetorDados[10][i],
-        'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
-    }
-    send_message_pedro(client, payload)
+    dados=[]
+    for i in range(365):
+        payload = {
+            'messageId': i+1,
+            'oxigenio':vetorDados[0][i],
+            'temperatura':vetorDados[1][i],
+            'ph':vetorDados[2][i],
+            'salinidade':vetorDados[3][i],
+            'turbidez':vetorDados[4][i],
+            'visibilidade':vetorDados[5][i],
+            'amonia':vetorDados[6][i],
+            'peso_peixe':vetorDados[7][i],
+            'biomassa':vetorDados[8][i],
+            'qualidade_agua':vetorDados[9][i],
+            'quantidade_peixe':vetorDados[10][i],
+            'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
+        }
+        dados.append(payload)
+        print(f"payload Adicionado: {payload} \n")
+    send_message(dados)
+
+    client = IoTHubDeviceClient.create_from_connection_string('HostName=pedroHub.azure-devices.net;DeviceId=pedroDevice;SharedAccessKey=yKhpMVEJdRDJ+CBWzOnjr+Ql2dd939ZZGjx6CfMGY+w=')
+    for i in range(5):
+        payload = {
+            'messageId': i+1,
+            'oxigenio':vetorDados[0][i],
+            'temperatura':vetorDados[1][i],
+            'ph':vetorDados[2][i],
+            'salinidade':vetorDados[3][i],
+            'turbidez':vetorDados[4][i],
+            'visibilidade':vetorDados[5][i],
+            'amonia':vetorDados[6][i],
+            'peso_peixe':vetorDados[7][i],
+            'biomassa':vetorDados[8][i],
+            'qualidade_agua':vetorDados[9][i],
+            'quantidade_peixe':vetorDados[10][i],
+            'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
+        }
+        send_message_pedro(client, payload)
+
+        print(f"payload enviado: {payload} \n")
+
+main()
