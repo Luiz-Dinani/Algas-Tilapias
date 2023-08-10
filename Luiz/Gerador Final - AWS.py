@@ -13,7 +13,7 @@ def conectarBancoDeDados():
         host="localhost",
         #host="3.224.136.146",
         user="tilapiasUser",
-        password="998072Lu"
+        password="tilapiasSenha"
     )
     cursor = db.cursor()
     cursor.execute("create database if not exists tilapias")
