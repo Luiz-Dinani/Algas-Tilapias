@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import mysql.connector
 import tracemalloc as tm
-from azure.iot.device import IoTHubDeviceClient, Message
+#from azure.iot.device import IoTHubDeviceClient, Message
 import json
 
 #region constantes
@@ -21,19 +21,19 @@ TAMANHO_UTIL_TANQUE =  40 #m³ -- 10 Tanques-Rede com 4 m³
 CAPACIDADE_SUPORTE_TANQUE = 3000
 #endregion
 
-def send_message(dados):
-    client = IoTHubDeviceClient.create_from_connection_string('HostName=iot-projeto.azure-devices.net;DeviceId=iot-device;SharedAccessKey=DjwshpAokazakYceRvN6ZioIH0XUe7l4eGznWSq8cFQ=')
-    dados_mensagem = json.dumps(dados)
-    message = Message(dados_mensagem)
-    message.content_type = 'application/json'
-    message.content_encoding = 'utf-8'
-    client.send_message(message)
-def send_message_pedro(client: IoTHubDeviceClient, dados: list):
-    dados_mensagem = json.dumps(dados)
-    message = Message(dados_mensagem)
-    message.content_type = 'application/json'
-    message.content_encoding = 'utf-8'
-    client.send_message(message)
+# def send_message(dados):
+#     client = IoTHubDeviceClient.create_from_connection_string('HostName=iot-projeto.azure-devices.net;DeviceId=iot-device;SharedAccessKey=DjwshpAokazakYceRvN6ZioIH0XUe7l4eGznWSq8cFQ=')
+#     dados_mensagem = json.dumps(dados)
+#     message = Message(dados_mensagem)
+#     message.content_type = 'application/json'
+#     message.content_encoding = 'utf-8'
+#     client.send_message(message)
+# def send_message_pedro(client: IoTHubDeviceClient, dados: list):
+#     dados_mensagem = json.dumps(dados)
+#     message = Message(dados_mensagem)
+#     message.content_type = 'application/json'
+#     message.content_encoding = 'utf-8'
+#     client.send_message(message)
 
 def calcularQualidadeAgua(temperatura, amonia, ph):
     #Ínidice de 1 a 4 onde o ideal é 4, 3 = Crescimento Lento, 2 = Sem repoducao e 1 = Mortalidade Altissima
@@ -133,7 +133,10 @@ def gerarDados():
     cap_quant=[]
     cap_peso=[]
     amonia = 0
-    for x in range(1, 366, 1):
+    hoje = datetime.date.today()
+    data = datetime.date(2023,1,1)
+    delta = hoje - data
+    for x in range(1, delta.days+1, 1):
         day = init_day + datetime.timedelta(days=+x)
         # Divisor de período - Anual
         y = x % 367
@@ -260,6 +263,29 @@ def geracao_vis(inicio, fim):
     results = sum(vis_total)
     return round(results / len(vis_total), 1)
 
+def bancoDados(insert):
+    try:
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="S@opaulo18",
+            database="algas"
+        )
+
+        if mydb.is_connected():
+            db_Info = mydb.get_server_info()
+            print("Conectado ao MySQL Server versão ", db_Info)
+            mycursor = mydb.cursor()
+            mycursor.execute(insert)
+            mydb.commit()
+            print(mycursor.rowcount, "registro inserido")
+    except mysql.connector.Error as e:
+        print("Erro ao conectar com o MySQL", e)
+    finally:
+        if(mydb.is_connected()):
+            mycursor.close()
+            mydb.close()
+            print("Conexão com MySQL está fechada\n")
 def main():
     tm.start()    
     tempoInicio = time.time()
@@ -267,47 +293,62 @@ def main():
     memoriaUsada = tm.get_traced_memory()
     tm.stop()    
     tempoDecorrido = time.time() - tempoInicio
+    ciclo = 0
+    dias=89
+    strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dias) values \n'
+    for i in range(len(vetorDados[0])):
+        if i%90==0:
+            ciclo+=1
+            dias=89
+        strTexto+=f"({ciclo}, {dias}, "
+        for j in vetorDados:
+            if(type(j[i]) is datetime.date):
+                strTexto+=f"'{j[i]}'),\n"
+            else:
+                strTexto+=f"{j[i]},"
+        dias-=1
+    strTexto = strTexto[:-2]
+    strTexto += ';'
+    bancoDados(strTexto)
+    # for i in range(365):
+    #     payload = {
+    #         'messageId': i+1,
+    #         'oxigenio':vetorDados[0][i],
+    #         'temperatura':vetorDados[1][i],
+    #         'ph':vetorDados[2][i],
+    #         'salinidade':vetorDados[3][i],
+    #         'turbidez':vetorDados[4][i],
+    #         'visibilidade':vetorDados[5][i],
+    #         'amonia':vetorDados[6][i],
+    #         'peso_peixe':vetorDados[7][i],
+    #         'biomassa':vetorDados[8][i],
+    #         'qualidade_agua':vetorDados[9][i],
+    #         'quantidade_peixe':vetorDados[10][i],
+    #         'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
+    #     }
+    #     dados.append(payload)
+    #     print(f"payload Adicionado: {payload} \n")
+    # send_message(dados)
 
-    dados=[]
-    for i in range(365):
-        payload = {
-            'messageId': i+1,
-            'oxigenio':vetorDados[0][i],
-            'temperatura':vetorDados[1][i],
-            'ph':vetorDados[2][i],
-            'salinidade':vetorDados[3][i],
-            'turbidez':vetorDados[4][i],
-            'visibilidade':vetorDados[5][i],
-            'amonia':vetorDados[6][i],
-            'peso_peixe':vetorDados[7][i],
-            'biomassa':vetorDados[8][i],
-            'qualidade_agua':vetorDados[9][i],
-            'quantidade_peixe':vetorDados[10][i],
-            'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
-        }
-        dados.append(payload)
-        print(f"payload Adicionado: {payload} \n")
-    send_message(dados)
+    # client = IoTHubDeviceClient.create_from_connection_string('HostName=pedroHub.azure-devices.net;DeviceId=pedroDevice;SharedAccessKey=yKhpMVEJdRDJ+CBWzOnjr+Ql2dd939ZZGjx6CfMGY+w=')
+    # for i in range(5):
+    #     payload = {
+    #         'messageId': i+1,
+    #         'oxigenio':vetorDados[0][i],
+    #         'temperatura':vetorDados[1][i],
+    #         'ph':vetorDados[2][i],
+    #         'salinidade':vetorDados[3][i],
+    #         'turbidez':vetorDados[4][i],
+    #         'visibilidade':vetorDados[5][i],
+    #         'amonia':vetorDados[6][i],
+    #         'peso_peixe':vetorDados[7][i],
+    #         'biomassa':vetorDados[8][i],
+    #         'qualidade_agua':vetorDados[9][i],
+    #         'quantidade_peixe':vetorDados[10][i],
+    #         'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
+    #     }
+    #     send_message_pedro(client, payload)
 
-    client = IoTHubDeviceClient.create_from_connection_string('HostName=pedroHub.azure-devices.net;DeviceId=pedroDevice;SharedAccessKey=yKhpMVEJdRDJ+CBWzOnjr+Ql2dd939ZZGjx6CfMGY+w=')
-    for i in range(5):
-        payload = {
-            'messageId': i+1,
-            'oxigenio':vetorDados[0][i],
-            'temperatura':vetorDados[1][i],
-            'ph':vetorDados[2][i],
-            'salinidade':vetorDados[3][i],
-            'turbidez':vetorDados[4][i],
-            'visibilidade':vetorDados[5][i],
-            'amonia':vetorDados[6][i],
-            'peso_peixe':vetorDados[7][i],
-            'biomassa':vetorDados[8][i],
-            'qualidade_agua':vetorDados[9][i],
-            'quantidade_peixe':vetorDados[10][i],
-            'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
-        }
-        send_message_pedro(client, payload)
-
-        print(f"payload enviado: {payload} \n")
+    #     print(f"payload enviado: {payload} \n")
 
 main()
