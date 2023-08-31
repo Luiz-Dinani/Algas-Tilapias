@@ -21,19 +21,66 @@ TAMANHO_UTIL_TANQUE =  40 #m³ -- 10 Tanques-Rede com 4 m³
 CAPACIDADE_SUPORTE_TANQUE = 3000
 #endregion
 
-# def send_message(dados):
-#     client = IoTHubDeviceClient.create_from_connection_string('HostName=iot-projeto.azure-devices.net;DeviceId=iot-device;SharedAccessKey=DjwshpAokazakYceRvN6ZioIH0XUe7l4eGznWSq8cFQ=')
-#     dados_mensagem = json.dumps(dados)
-#     message = Message(dados_mensagem)
-#     message.content_type = 'application/json'
-#     message.content_encoding = 'utf-8'
-#     client.send_message(message)
-# def send_message_pedro(client: IoTHubDeviceClient, dados: list):
-#     dados_mensagem = json.dumps(dados)
-#     message = Message(dados_mensagem)
-#     message.content_type = 'application/json'
-#     message.content_encoding = 'utf-8'
-#     client.send_message(message)
+def conectarBancoDeDados():
+    db = mysql.connector.connect(
+        host="database-1.cucfdybb1rps.us-east-1.rds.amazonaws.com",
+        user="tilapiasUser",
+        password="tilapiasSenha"
+    )
+    
+    cursor = db.cursor()
+    cursor.execute("use samaka")
+    return db
+
+def criarBanco():
+    db = conectarBancoDeDados()
+    cursor = db.cursor()
+    cursor.execute("create database if not exists samaka")
+
+def criarTabelas():
+    db = conectarBancoDeDados()
+    cursor = db.cursor()
+
+    # criar uma tabela para os dados dos Sensores
+    cursor = db.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS monitoracaoCiclo (
+            idCiclo int,
+            diasRestantes int,
+            oxigenio decimal(3,1),
+            temperatura decimal(3,1),
+            ph decimal(3,1),
+            salinidade decimal(3,1),
+            turbidez decimal(3,1),
+            visibilidade decimal(3,1),
+            amonia decimal(3,2),
+            peso_peixe decimal(8, 5),
+            biomassa decimal(4,1),
+            qualidade_agua int,
+            quantidade_peixes int,
+            data datetime
+    )
+    """)
+
+def inserirDados(insert):
+    try:
+        mydb = conectarBancoDeDados()
+
+        if mydb.is_connected():
+            db_Info = mydb.get_server_info()
+            print("Conectado ao MySQL Server versão ", db_Info)
+            mycursor = mydb.cursor()
+            mycursor.execute(insert)
+            mydb.commit()
+            print(mycursor.rowcount, "registro inserido")
+    except mysql.connector.Error as e:
+        print("Erro ao conectar com o MySQL", e)
+    finally:
+        if(mydb.is_connected()):
+            mycursor.close()
+            mydb.close()
+            print("Conexão com MySQL está fechada\n")
+
 
 def calcularQualidadeAgua(temperatura, amonia, ph):
     #Ínidice de 1 a 4 onde o ideal é 4, 3 = Crescimento Lento, 2 = Sem repoducao e 1 = Mortalidade Altissima
@@ -263,30 +310,9 @@ def geracao_vis(inicio, fim):
     results = sum(vis_total)
     return round(results / len(vis_total), 1)
 
-def bancoDados(insert):
-    try:
-        mydb = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="S@opaulo18",
-            database="algas"
-        )
-
-        if mydb.is_connected():
-            db_Info = mydb.get_server_info()
-            print("Conectado ao MySQL Server versão ", db_Info)
-            mycursor = mydb.cursor()
-            mycursor.execute(insert)
-            mydb.commit()
-            print(mycursor.rowcount, "registro inserido")
-    except mysql.connector.Error as e:
-        print("Erro ao conectar com o MySQL", e)
-    finally:
-        if(mydb.is_connected()):
-            mycursor.close()
-            mydb.close()
-            print("Conexão com MySQL está fechada\n")
 def main():
+    criarBanco()
+    criarTabelas()
     tm.start()    
     tempoInicio = time.time()
     vetorDados = gerarDados()
@@ -295,7 +321,7 @@ def main():
     tempoDecorrido = time.time() - tempoInicio
     ciclo = 0
     dias=89
-    strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dias) values \n'
+    strTexto='insert into monitoracaoCiclo (idCiclo, diasRestantes, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixes, data) values \n'
     for i in range(len(vetorDados[0])):
         if i%90==0:
             ciclo+=1
@@ -309,46 +335,7 @@ def main():
         dias-=1
     strTexto = strTexto[:-2]
     strTexto += ';'
-    bancoDados(strTexto)
-    # for i in range(365):
-    #     payload = {
-    #         'messageId': i+1,
-    #         'oxigenio':vetorDados[0][i],
-    #         'temperatura':vetorDados[1][i],
-    #         'ph':vetorDados[2][i],
-    #         'salinidade':vetorDados[3][i],
-    #         'turbidez':vetorDados[4][i],
-    #         'visibilidade':vetorDados[5][i],
-    #         'amonia':vetorDados[6][i],
-    #         'peso_peixe':vetorDados[7][i],
-    #         'biomassa':vetorDados[8][i],
-    #         'qualidade_agua':vetorDados[9][i],
-    #         'quantidade_peixe':vetorDados[10][i],
-    #         'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
-    #     }
-    #     dados.append(payload)
-    #     print(f"payload Adicionado: {payload} \n")
-    # send_message(dados)
+    inserirDados(strTexto)
 
-    # client = IoTHubDeviceClient.create_from_connection_string('HostName=pedroHub.azure-devices.net;DeviceId=pedroDevice;SharedAccessKey=yKhpMVEJdRDJ+CBWzOnjr+Ql2dd939ZZGjx6CfMGY+w=')
-    # for i in range(5):
-    #     payload = {
-    #         'messageId': i+1,
-    #         'oxigenio':vetorDados[0][i],
-    #         'temperatura':vetorDados[1][i],
-    #         'ph':vetorDados[2][i],
-    #         'salinidade':vetorDados[3][i],
-    #         'turbidez':vetorDados[4][i],
-    #         'visibilidade':vetorDados[5][i],
-    #         'amonia':vetorDados[6][i],
-    #         'peso_peixe':vetorDados[7][i],
-    #         'biomassa':vetorDados[8][i],
-    #         'qualidade_agua':vetorDados[9][i],
-    #         'quantidade_peixe':vetorDados[10][i],
-    #         'dias':f'{vetorDados[11][i]:%Y-%m-%d %H:%M:%S.%f}',
-    #     }
-    #     send_message_pedro(client, payload)
-
-    #     print(f"payload enviado: {payload} \n")
 
 main()
