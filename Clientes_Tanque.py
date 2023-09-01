@@ -103,4 +103,4 @@ for email in dados_email:
         vetor_senha.append(f"{hash_password(email[0].lower()+'_'+email[-2].lower())}")
 dados_empresa['EMAIL'] = vetor_email
 dados_empresa['SENHA'] = vetor_senha
-dados_empresa.to_csv('Empresa.csv', index=False, encoding='UTF-8')
+dados_empresa.to_csv('empresa.csv', index=False, encoding='UTF-8', sep=';')
