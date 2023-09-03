@@ -1,12 +1,10 @@
 import random as r
 import time
 import datetime
-# import matplotlib.pyplot as plt
 import sys
 import numpy as np
 import mysql.connector
 import tracemalloc as tm
-#from azure.iot.device import IoTHubDeviceClient, Message
 import json
 
 #region constantes
@@ -21,67 +19,86 @@ TAMANHO_UTIL_TANQUE =  40 #m³ -- 10 Tanques-Rede com 4 m³
 CAPACIDADE_SUPORTE_TANQUE = 3000
 #endregion
 
-def conectarBancoDeDados():
-    db = mysql.connector.connect(
-        host="database-1.cucfdybb1rps.us-east-1.rds.amazonaws.com",
-        user="tilapiasUser",
-        password="tilapiasSenha"
-    )
+# def conectarBancoDeDados():
+#     db = mysql.connector.connect(
+#         host="database-1.cucfdybb1rps.us-east-1.rds.amazonaws.com",
+#         user="tilapiasUser",
+#         password="tilapiasSenha"
+#     )
     
-    cursor = db.cursor()
-    cursor.execute("use samaka")
-    return db
+#     cursor = db.cursor()
+#     cursor.execute("use samaka")
+#     return db
 
-def criarBanco():
-    db = conectarBancoDeDados()
-    cursor = db.cursor()
-    cursor.execute("create database if not exists samaka")
+# def criarBanco():
+#     db = conectarBancoDeDados()
+#     cursor = db.cursor()
+#     cursor.execute("create database if not exists samaka")
 
-def criarTabelas():
-    db = conectarBancoDeDados()
-    cursor = db.cursor()
+# def criarTabelas():
+#     db = conectarBancoDeDados()
+#     cursor = db.cursor()
 
-    # criar uma tabela para os dados dos Sensores
-    cursor = db.cursor()
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS monitoracaoCiclo (
-            idCiclo int,
-            diasRestantes int,
-            oxigenio decimal(3,1),
-            temperatura decimal(3,1),
-            ph decimal(3,1),
-            salinidade decimal(3,1),
-            turbidez decimal(3,1),
-            visibilidade decimal(3,1),
-            amonia decimal(3,2),
-            peso_peixe decimal(8, 5),
-            biomassa decimal(4,1),
-            qualidade_agua int,
-            quantidade_peixes int,
-            data datetime
-    )
-    """)
+#     # criar uma tabela para os dados dos Sensores
+#     cursor = db.cursor()
+#     cursor.execute("""
+#     CREATE TABLE IF NOT EXISTS monitoracaoCiclo (
+#             idCiclo int,
+#             diasRestantes int,
+#             oxigenio decimal(3,1),
+#             temperatura decimal(3,1),
+#             ph decimal(3,1),
+#             salinidade decimal(3,1),
+#             turbidez decimal(3,1),
+#             visibilidade decimal(3,1),
+#             amonia decimal(3,2),
+#             peso_peixe decimal(8, 5),
+#             biomassa decimal(4,1),
+#             qualidade_agua int,
+#             quantidade_peixes int,
+#             data datetime
+#     )
+#     """)
 
-def inserirDados(insert):
+# def inserirDados(insert):
+#     try:
+#         mydb = conectarBancoDeDados()
+
+#         if mydb.is_connected():
+#             db_Info = mydb.get_server_info()
+#             print("Conectado ao MySQL Server versão ", db_Info)
+#             mycursor = mydb.cursor()
+#             mycursor.execute(insert)
+#             mydb.commit()
+#             print(mycursor.rowcount, "registro inserido")
+#     except mysql.connector.Error as e:
+#         print("Erro ao conectar com o MySQL", e)
+#     finally:
+#         if(mydb.is_connected()):
+#             mycursor.close()
+#             mydb.close()
+#             print("Conexão com MySQL está fechada\n")
+
+def bancoDados(insert):
     try:
-        mydb = conectarBancoDeDados()
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="S@opaulo18",
+            database="algas"
+        )
 
         if mydb.is_connected():
             db_Info = mydb.get_server_info()
-            print("Conectado ao MySQL Server versão ", db_Info)
             mycursor = mydb.cursor()
             mycursor.execute(insert)
             mydb.commit()
-            print(mycursor.rowcount, "registro inserido")
     except mysql.connector.Error as e:
         print("Erro ao conectar com o MySQL", e)
     finally:
         if(mydb.is_connected()):
             mycursor.close()
             mydb.close()
-            print("Conexão com MySQL está fechada\n")
-
-
 def calcularQualidadeAgua(temperatura, amonia, ph):
     #Ínidice de 1 a 4 onde o ideal é 4, 3 = Crescimento Lento, 2 = Sem repoducao e 1 = Mortalidade Altissima
     #Verifica se o pH está fora do range adequado
@@ -311,31 +328,27 @@ def geracao_vis(inicio, fim):
     return round(results / len(vis_total), 1)
 
 def main():
-    criarBanco()
-    criarTabelas()
-    tm.start()    
-    tempoInicio = time.time()
-    vetorDados = gerarDados()
-    memoriaUsada = tm.get_traced_memory()
-    tm.stop()    
-    tempoDecorrido = time.time() - tempoInicio
-    ciclo = 0
-    dias=89
-    strTexto='insert into monitoracaoCiclo (idCiclo, diasRestantes, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixes, data) values \n'
-    for i in range(len(vetorDados[0])):
-        if i%90==0:
-            ciclo+=1
-            dias=89
-        strTexto+=f"({ciclo}, {dias}, "
-        for j in vetorDados:
-            if(type(j[i]) is datetime.date):
-                strTexto+=f"'{j[i]}'),\n"
-            else:
-                strTexto+=f"{j[i]},"
-        dias-=1
-    strTexto = strTexto[:-2]
-    strTexto += ';'
-    inserirDados(strTexto)
+    # criarBanco()
+    # criarTabelas()
+    for tanques in range(55):
+        vetorDados = gerarDados()
+        ciclo = 0
+        dias=89
+        strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dias, fkTanque) values \n'
+        for i in range(len(vetorDados[0])):
+            if i%90==0:
+                ciclo+=1
+                dias=89
+            strTexto+=f"({ciclo}, {dias}, "
+            for j in vetorDados:
+                if(type(j[i]) is datetime.date):
+                    strTexto+=f"'{j[i]}',{tanques+1}),\n"
+                else:
+                    strTexto+=f"{j[i]},"
+            dias-=1
+        strTexto = strTexto[:-2]
+        strTexto += ';'
+        bancoDados(strTexto)
 
 
 main()
