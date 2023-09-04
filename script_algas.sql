@@ -1,8 +1,11 @@
-drop database algas;
-create database algas;
-use algas;
+drop database samaka;
+create database samaka;
+use samaka;
+create user IF NOT EXISTS tilapiasUser IDENTIFIED with "tilapiasSenha";
+grant all privileges ON *.* TO tilapiasUser;
+flush privileges;
 
-create table empresa(
+CREATE TABLE IF NOT EXISTS empresa(
   idEmpresa INT AUTO_INCREMENT PRIMARY KEY,
   nomeEmpresa varchar(255),
   email varchar(50),
@@ -10,7 +13,7 @@ create table empresa(
   cnpj char(14)
 );
 
-CREATE TABLE funcionario (
+CREATE TABLE IF NOT EXISTS funcionario (
   idFuncionario INT AUTO_INCREMENT PRIMARY KEY,
   nome VARCHAR(255),
   cpf VARCHAR(11),
@@ -24,7 +27,7 @@ CREATE TABLE funcionario (
 );
 
 
-CREATE TABLE tanque (
+CREATE TABLE IF NOT EXISTS tanque (
   idTanque INT NOT NULL AUTO_INCREMENT,
   fkFuncionario INT,
   cep char(8),
@@ -37,7 +40,7 @@ CREATE TABLE tanque (
 );
 
 
-CREATE TABLE monitoracaoCiclo (
+CREATE TABLE IF NOT EXISTS monitoracaoCiclo (
   idMonitoracaoCiclo INT AUTO_INCREMENT PRIMARY KEY,
   idCiclo INT,
   diasRestante INT ,
