@@ -158,3 +158,18 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+.idea/.gitignore
+.idea/Algas-Tilapias.iml
+.idea/dataSources.local.xml
+.idea/dataSources.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/sqldialects.xml
+.idea/vcs.xml
+.idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9.xml
+.idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/information_schema.FNRwLQ.meta
+.idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/mysql.osA4Bg.meta
+.idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/performance_schema.kIw0nw.meta
+.idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/samaka.OD3HyQ.meta
+.idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/sys.zb4BAA.meta
+.idea/inspectionProfiles/profiles_settings.xml

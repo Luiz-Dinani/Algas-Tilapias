@@ -1,5 +1,5 @@
 import pandas as pd
-dados_cliente = pd.read_csv('./Arquivos_CSV/ceps.csv', encoding='UTF-8', sep=';')
+dados_cliente = pd.read_csv('Arquivos_CSV/ceps.csv', encoding='UTF-8', sep=';')
 cidade_estado = dados_cliente['CIDADE']
 vetor_cidade = []
 vetor_estado = []
@@ -18,7 +18,7 @@ matriz_estados = [
     [1,2],
     [1,1]
 ]
-dados_funcionario = pd.read_csv('./funcionario.csv', encoding='ANSI', sep=';', header=None)
+dados_funcionario = pd.read_csv('funcionario.csv', encoding='UTF-8', sep=';', header=None)
 dados_funcionario.columns=['NOME','CPF','GENERO','IDADE','EMAIL','SENHA','FUNCAO','EMP']
 matriz_empresa = [[3,3,3,3,2,2,2,1,0,0],	[3,2,2,3,3,2,1,1,1,0],	[2,2,2,1,1,1,1,1,1,1],	[1,1,1,0,0,0,0,0,0,0],	[1,1,0,0,0,0,0,0,0,0]]
 strCsv_endereco=''
@@ -31,7 +31,7 @@ for i in range(5):
                 dados_funcionario=dados_funcionario.drop(valor)
                 teste_vetor.append(valor+1)
     for j in range(2):
-        strCsv_endereco+=dados_cliente.loc[dados_cliente['ESTADO']==matriz_regioes[i][j]].sample(n=matriz_estados[i][j]).to_csv(index=False, sep=';', header=False).replace('\n','')
+        strCsv_endereco+=dados_cliente.loc[dados_cliente['ESTADO']==matriz_regioes[i][j]].sample(n=matriz_estados[i][j]).to_csv(index=False, sep=';', header=False)
 open('dados.csv', 'w', encoding='UTF-8').write(strCsv_endereco)
 dados = pd.read_csv('dados.csv', encoding='UTF-8', sep=';', header=None)
 dados['Funcionario'] = teste_vetor
