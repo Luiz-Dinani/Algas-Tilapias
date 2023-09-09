@@ -1,11 +1,11 @@
 import random as r
 import time
 import datetime
-import sys
 import numpy as np
 import mysql.connector
 import tracemalloc as tm
 import json
+import os
 
 #region constantes
 AUMENTO_PESO_DIARIO = 0.00545 #kg ((800g - 200g)/110dias) / 1000. --Valor por tilápia
@@ -282,7 +282,7 @@ def main():
         vetorDados = gerarDados()
         ciclo = 0
         dias=89
-        strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dias, fkTanque) values \n'
+        strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dias, fkTanque) values \n'        
         for i in range(len(vetorDados[0])):
             if i%90==0:
                 ciclo+=1
@@ -294,9 +294,12 @@ def main():
                 else:
                     strTexto+=f"{j[i]},"
             dias-=1
+        
         strTexto = strTexto[:-2]
         strTexto += ';'
         inserirDados(strTexto)
-
+    for arquivo in os.listdir():
+        if arquivo.endswith(".csv"):
+            os.remove(arquivo)
 
 main()
