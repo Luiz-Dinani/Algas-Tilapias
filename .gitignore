@@ -173,3 +173,7 @@ cython_debug/
 .idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/samaka.OD3HyQ.meta
 .idea/dataSources/1d3f2014-f97e-42ae-ac8f-5056149042a9/storage_v2/_src_/schema/sys.zb4BAA.meta
 .idea/inspectionProfiles/profiles_settings.xml
+Arquivo_Temperatura.csv
+dados.csv
+empresa.csv
+funcionario.csv
