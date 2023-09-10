@@ -1,7 +1,8 @@
 from flask import Flask
 import mysql.connector
 import hashlib
-from teste_gs import gerarPlanilha as gp
+from Google_sheets import gerarPlanilha as gp
+import pandas as pd
 
 def conectarBancoDeDados():
     db = mysql.connector.connect(
@@ -16,14 +17,11 @@ def coletaDados(select):
     try:
         mydb = conectarBancoDeDados()
         if mydb.is_connected():
-            mycursor = mydb.cursor()
-            mycursor.execute(select)
-            return mycursor.fetchall()
+            return pd.read_sql(select, mydb)
     except mysql.connector.Error as e:
         print("Erro ao conectar com o MySQL", e)
     finally:
         if(mydb.is_connected()):
-            mycursor.close()
             mydb.close()
 def hash_password(password):
   hash_object = hashlib.sha256()
@@ -39,10 +37,21 @@ def after_request(response):
     return response
 @app.route("/<email>/<senha>")
 def funcao(email, senha):
-    resultado = coletaDados(f"select count(*) from empresa where email = '{email}' and senha = '{hash_password(senha)}';")
-    if resultado[0][0]>0:
-        return "A"
+    senha=hash_password(senha)
+    resultado = coletaDados(f"select *, (select nomeEmpresa from empresa where email='{email}' and senha='{senha}') as empresa from monitoracaoCiclo where fkTanque in (select idTanque from tanque where fkFuncionario in (select idFuncionario from funcionario where fkEmpresa=(select idEmpresa from empresa where email='{email}' and senha='{senha}'))) order by fkTanque asc;")
+    if len(resultado)>0:
+        gp(resultado.empresa[0],'A',resultado.drop(columns=['empresa', 'idMonitoracaoCiclo']))
+        return 'Planilha feita com sucesso'
     else:
-        resultado = coletaDados(f"select count(*), funcao from funcionario where email = '{email}' and senha = '{hash_password(senha)}';")
-        if resultado[0][0]>0:
-            return resultado[0][1]
+        return 'Erro de login'
+    # if resultado[0][0]>0:
+    #     return "A"
+    # else:
+    #     resultado = coletaDados(f"select count(*), funcao from funcionario where email = '{email}' and senha = '{senha}';")
+    #     if resultado[0][0]>0:
+    #         return resultado[0][1]
+    #     else:
+    #         return 'erro'
+        
+#
+# funcao('atacado_peixe@atacado.com','atacado_peixe')
