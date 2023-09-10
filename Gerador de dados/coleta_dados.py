@@ -1,8 +1,8 @@
 import pandas as pd
-dados_abril = pd.read_csv('./Temperatura/6e385352-a20d-42fb-805d-b1e735852678.csv')
-dados_marco = pd.read_csv('./Temperatura/43edf9f6-dffb-43da-a562-a0bc1f889a5c.csv')
-dados_fever = pd.read_csv('./Temperatura/72b69a12-7e7f-c572-af3e-359e1dad2e52.csv')
-dados_janei = pd.read_csv('./Temperatura/f91c3ca6-7c9f-7d1e-f004-4ea88b7d73ab.csv')
+dados_abril = pd.read_csv('../Temperatura/6e385352-a20d-42fb-805d-b1e735852678.csv')
+dados_marco = pd.read_csv('../Temperatura/43edf9f6-dffb-43da-a562-a0bc1f889a5c.csv')
+dados_fever = pd.read_csv('../Temperatura/72b69a12-7e7f-c572-af3e-359e1dad2e52.csv')
+dados_janei = pd.read_csv('../Temperatura/f91c3ca6-7c9f-7d1e-f004-4ea88b7d73ab.csv')
 dados = pd.DataFrame()
 cidades_california = ["Los Angeles", "San Francisco", "San Diego", "Sacramento", "San Jose", "Oakland", "Fresno", "Long Beach", "Anaheim", "Santa Monica"]
 dados_abril=dados_abril[['DATA 0','TIME 0', 'LOCATION 0']]

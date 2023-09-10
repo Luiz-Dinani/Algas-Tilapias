@@ -5,7 +5,7 @@ vetorMulher=[]
 vetorHomem=[]
 vetorOutros = []
 d = gender.Detector()
-dados_cliente = pd.read_csv('Arquivos_CSV/arquivoAnonimizado.csv', encoding='UTF-8', sep=';')
+dados_cliente = pd.read_csv('../Arquivos_back_end/arquivoAnonimizado.csv', encoding='UTF-8', sep=';')
 dados_nomes = dados_cliente.to_csv(index=False, header=False, encoding='UTF-8')
 dados_nomes = dados_nomes.replace('\r', '').split('\n')
 ch=0
@@ -99,7 +99,7 @@ for dados in dados_nomes:
             idade = r.randint(23,55)
             strCsv += f'{dados[0]};{dados[1]};M;{idade};{nome[0].lower()}_{nome[-1].lower() if len(nome)>2 else 2023-idade}@gmail.com;{hash_password(nome[0].lower()+"_"+str(2023-idade))};{funcF};{fkEmpF}\n'
 open('funcionario.csv', 'w').write(strCsv)
-dados_empresa = pd.read_csv('Arquivos_CSV/CNPJ.csv', encoding='UTF-8', sep=';')
+dados_empresa = pd.read_csv('../Arquivos_back_end/CNPJ.csv', encoding='UTF-8', sep=';')
 dados_email = dados_empresa['NOME'].to_csv(index=False, header=False, encoding='UTF-8')
 dados_email = dados_email.replace('\r', '').split("\n")
 vetor_email = []

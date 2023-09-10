@@ -1,5 +1,5 @@
 import pandas as pd
-dados_cliente = pd.read_csv('Arquivos_CSV/ceps.csv', encoding='UTF-8', sep=';')
+dados_cliente = pd.read_csv('../Arquivos_back_end/ceps.csv', encoding='UTF-8', sep=';')
 cidade_estado = dados_cliente['CIDADE']
 vetor_cidade = []
 vetor_estado = []
