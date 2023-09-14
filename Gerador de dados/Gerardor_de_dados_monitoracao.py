@@ -282,7 +282,7 @@ def main():
         vetorDados = gerarDados()
         ciclo = 0
         dias=89
-        strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dias, fkTanque) values \n'        
+        strTexto='insert into monitoracaoCiclo (idCiclo, diasRestante, oxigenio, temperatura, ph, salinidade, turbidez, visibilidade, amonia,  peso_peixe, biomassa, qualidade_agua, quantidade_peixe, dia, fkTanque) values \n'        
         for i in range(len(vetorDados[0])):
             if i%90==0:
                 ciclo+=1

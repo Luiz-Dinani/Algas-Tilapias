@@ -1,6 +1,7 @@
 import pandas as pd
 import gender_guesser.detector as gender
 import random as r
+from ..Arquivos_back_end.hash import hash_password
 vetorMulher=[]
 vetorHomem=[]
 vetorOutros = []
@@ -10,12 +11,9 @@ dados_nomes = dados_cliente.to_csv(index=False, header=False, encoding='UTF-8')
 dados_nomes = dados_nomes.replace('\r', '').split('\n')
 ch=0
 cm=0
-import hashlib
 
-def hash_password(password):
-  hash_object = hashlib.sha256()
-  hash_object.update(password.encode("utf-8"))
-  return hash_object.hexdigest()
+
+
 fkEmpM=1
 fkEmpF=1
 strCsv = ''#NOME;CPF;GENERO;IDADE;EMAIL;SENHA;FUNCAO;EMP

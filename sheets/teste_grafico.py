@@ -5,7 +5,7 @@ from google.oauth2 import service_account
 credentials = service_account.Credentials.from_service_account_file('projetosamaka.json', scopes=['https://www.googleapis.com/auth/spreadsheets'])
 
 # ID da planilha
-spreadsheet_id = '1V-N1SOEJS4j5MIXoRF1j43vQmySQ2tsXowHNPFLhmUI'
+spreadsheet_id = '1VtwtPHPKl2YEwIawfOkn9VQATgqWcl5qquoQIKRno7Q'
 
 # Crie uma solicitação para adicionar um gráfico de colunas
 request = {
@@ -14,7 +14,7 @@ request = {
             "addChart": {
                 "chart": {
                     "spec": {
-                        "title": "Meu Gráfico de Colunas",
+                        "title": "Data X Biomassa",
                         "titleTextPosition": {
                             "horizontalAlignment": "CENTER"
                         },
@@ -24,11 +24,11 @@ request = {
                             "axis": [
                                 {
                                     "position": "BOTTOM_AXIS",
-                                    "title": "Categorias"
+                                    "title": "Data"
                                 },
                                 {
                                     "position": "LEFT_AXIS",
-                                    "title": "Valores"
+                                    "title": "Biomassa"
                                 }
                             ],
                             "domains": [
@@ -37,8 +37,8 @@ request = {
                                         "sourceRange": {
                                             "sources": [
                                                 {
-                                                    "sheetId": 1364269422,
-                                                    "startRowIndex": 1,
+                                                    "sheetId": 680959972,
+                                                    "startRowIndex": 237,
                                                     "startColumnIndex": 4,
                                                     "endRowIndex": 252,
                                                     "endColumnIndex": 5
@@ -54,8 +54,8 @@ request = {
                                         "sourceRange": {
                                             "sources": [
                                                 {
-                                                    "sheetId": 1364269422,
-                                                    "startRowIndex": 1,
+                                                    "sheetId": 680959972,
+                                                    "startRowIndex": 237,
                                                     "startColumnIndex": 2,
                                                     "endRowIndex": 252,
                                                     "endColumnIndex": 3
@@ -68,71 +68,225 @@ request = {
                         }
                     },
                     "position": {
-                        "newSheet": True
-                    }
-                }
-            },
-            "addChart": {
-                "chart": {
-                    "spec": {
-                        "title": "Meu Gráfico de Colunas",
-                        "titleTextPosition": {
-                            "horizontalAlignment": "CENTER"
-                        },
-                        "basicChart": {
-                            "chartType": "LINE",
-                            "legendPosition": "BOTTOM_LEGEND",
-                            "axis": [
-                                {
-                                    "position": "BOTTOM_AXIS",
-                                    "title": "Categorias"
+                        "overlayPosition": {
+                            "anchorCell": {
+                                "sheetId": 1187499399,
+                                "rowIndex": 0,
+                                "columnIndex": 0
                                 },
-                                {
-                                    "position": "LEFT_AXIS",
-                                    "title": "Valores"
-                                }
-                            ],
-                            "domains": [
-                                {
-                                    "domain": {
-                                        "sourceRange": {
-                                            "sources": [
-                                                {
-                                                    "sheetId": 1364269422,
-                                                    "startRowIndex": 1,
-                                                    "startColumnIndex": 3,
-                                                    "endRowIndex": 252,
-                                                    "endColumnIndex": 4
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ],
-                            "series": [
-                                {
-                                    "series": {
-                                        "sourceRange": {
-                                            "sources": [
-                                                {
-                                                    "sheetId": 1364269422,
-                                                    "startRowIndex": 1,
-                                                    "startColumnIndex": 2,
-                                                    "endRowIndex": 252,
-                                                    "endColumnIndex": 4
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
+                            "widthPixels": 400,
+                            "heightPixels": 300
                         }
                     },
-                    "position": {
-                        "newSheet": True
-                    }
                 }
-            }
+            }#,
+            # "addChart": {
+            #     "chart": {
+            #         "spec": {
+            #             "title": "Data X Amonia",
+            #             "titleTextPosition": {
+            #                 "horizontalAlignment": "CENTER"
+            #             },
+            #             "basicChart": {
+            #                 "chartType": "LINE",
+            #                 "legendPosition": "BOTTOM_LEGEND",
+            #                 "axis": [
+            #                     {
+            #                         "position": "BOTTOM_AXIS",
+            #                         "title": "Data"
+            #                     },
+            #                     {
+            #                         "position": "LEFT_AXIS",
+            #                         "title": "Amonia"
+            #                     }
+            #                 ],
+            #                 "domains": [
+            #                     {
+            #                         "domain": {
+            #                             "sourceRange": {
+            #                                 "sources": [
+            #                                     {
+            #                                         "sheetId": 680959972,
+            #                                         "startRowIndex": 237,
+            #                                         "startColumnIndex": 4,
+            #                                         "endRowIndex": 252,
+            #                                         "endColumnIndex": 5
+            #                                     }
+            #                                 ]
+            #                             }
+            #                         }
+            #                     }
+            #                 ],
+            #                 "series": [
+            #                     {
+            #                         "series": {
+            #                             "sourceRange": {
+            #                                 "sources": [
+            #                                     {
+            #                                         "sheetId": 680959972,
+            #                                         "startRowIndex": 237,
+            #                                         "startColumnIndex": 2,
+            #                                         "endRowIndex": 252,
+            #                                         "endColumnIndex": 3
+            #                                     }
+            #                                 ]
+            #                             }
+            #                         }
+            #                     }
+            #                 ]
+            #             }
+            #         },
+            #         "position": {
+            #             "overlayPosition": {
+            #                 "anchorCell": {
+            #                     "sheetId": 1187499399,
+            #                     "rowIndex": 0,
+            #                     "columnIndex": 4
+            #                     },
+            #                 "widthPixels": 400,
+            #                 "heightPixels": 300
+            #             }
+            #         },
+            #     }
+            # }#,
+            # "addChart": {
+            #     "chart": {
+            #         "spec": {
+            #             "title": "Data X Biomassa",
+            #             "titleTextPosition": {
+            #                 "horizontalAlignment": "CENTER"
+            #             },
+            #             "basicChart": {
+            #                 "chartType": "LINE",
+            #                 "legendPosition": "BOTTOM_LEGEND",
+            #                 "axis": [
+            #                     {
+            #                         "position": "BOTTOM_AXIS",
+            #                         "title": "Data"
+            #                     },
+            #                     {
+            #                         "position": "LEFT_AXIS",
+            #                         "title": "Biomassa"
+            #                     }
+            #                 ],
+            #                 "domains": [
+            #                     {
+            #                         "domain": {
+            #                             "sourceRange": {
+            #                                 "sources": [
+            #                                     {
+            #                                         "sheetId": 680959972,
+            #                                         "startRowIndex": 237,
+            #                                         "startColumnIndex": 4,
+            #                                         "endRowIndex": 252,
+            #                                         "endColumnIndex": 5
+            #                                     }
+            #                                 ]
+            #                             }
+            #                         }
+            #                     }
+            #                 ],
+            #                 "series": [
+            #                     {
+            #                         "series": {
+            #                             "sourceRange": {
+            #                                 "sources": [
+            #                                     {
+            #                                         "sheetId": 680959972,
+            #                                         "startRowIndex": 237,
+            #                                         "startColumnIndex": 3,
+            #                                         "endRowIndex": 252,
+            #                                         "endColumnIndex": 4
+            #                                     }
+            #                                 ]
+            #                             }
+            #                         }
+            #                     }
+            #                 ]
+            #             }
+            #         },
+            #         "position": {
+            #             "overlayPosition": {
+            #                 "anchorCell": {
+            #                     "sheetId": 1187499399,
+            #                     "rowIndex": 0,
+            #                     "columnIndex": 0
+            #                     },
+            #                 "widthPixels": 400,
+            #                 "heightPixels": 300
+            #             }
+            #         },
+            #     }
+            # },
+            # "addChart": {
+            #     "chart": {
+            #         "spec": {
+            #             "title": "Data X Amonia",
+            #             "titleTextPosition": {
+            #                 "horizontalAlignment": "CENTER"
+            #             },
+            #             "basicChart": {
+            #                 "chartType": "LINE",
+            #                 "legendPosition": "BOTTOM_LEGEND",
+            #                 "axis": [
+            #                     {
+            #                         "position": "BOTTOM_AXIS",
+            #                         "title": "Data"
+            #                     },
+            #                     {
+            #                         "position": "LEFT_AXIS",
+            #                         "title": "Amonia"
+            #                     }
+            #                 ],
+            #                 "domains": [
+            #                     {
+            #                         "domain": {
+            #                             "sourceRange": {
+            #                                 "sources": [
+            #                                     {
+            #                                         "sheetId": 680959972,
+            #                                         "startRowIndex": 237,
+            #                                         "startColumnIndex": 4,
+            #                                         "endRowIndex": 252,
+            #                                         "endColumnIndex": 5
+            #                                     }
+            #                                 ]
+            #                             }
+            #                         }
+            #                     }
+            #                 ],
+            #                 "series": [
+            #                     {
+            #                         "series": {
+            #                             "sourceRange": {
+            #                                 "sources": [
+            #                                     {
+            #                                         "sheetId": 680959972,
+            #                                         "startRowIndex": 237,
+            #                                         "startColumnIndex": 2,
+            #                                         "endRowIndex": 252,
+            #                                         "endColumnIndex": 3
+            #                                     }
+            #                                 ]
+            #                             }
+            #                         }
+            #                     }
+            #                 ]
+            #             }
+            #         },
+            #         "position": {
+            #             "overlayPosition": {
+            #                 "anchorCell": {
+            #                     "sheetId": 1187499399,
+            #                     "rowIndex": 0,
+            #                     "columnIndex": 4
+            #                     },
+            #                 "widthPixels": 400,
+            #                 "heightPixels": 300
+            #             }
+            #         },
+            #     }
+            # },
         }
     ]
 }

@@ -19,7 +19,7 @@ matriz_estados = [
     [1,1]
 ]
 dados_funcionario = pd.read_csv('funcionario.csv', encoding='UTF-8', sep=';', header=None)
-dados_funcionario.columns=['NOME','CPF','GENERO','IDADE','EMAIL','SENHA','FUNCAO','EMP']
+dados_funcionario.columns=['NOME','CPF','GENERO','IDADE','EMAIL','SENHA','EMP','FUNCAO','2fa']
 matriz_empresa = [[3,3,3,3,2,2,2,1,0,0],	[3,2,2,3,3,2,1,1,1,0],	[2,2,2,1,1,1,1,1,1,1],	[1,1,1,0,0,0,0,0,0,0],	[1,1,0,0,0,0,0,0,0,0]]
 strCsv_endereco=''
 teste_vetor = []
@@ -27,7 +27,7 @@ for i in range(5):
     for x in range(10):
         if matriz_empresa[i][x]!=0:
             for contador in range(matriz_empresa[i][x]):
-                valor = dados_funcionario.loc[(dados_funcionario['EMP']==x+1) & (dados_funcionario['FUNCAO']=='G')].sample(n=1).index[0]
+                valor = dados_funcionario.loc[(dados_funcionario['EMP']==x+1) & (dados_funcionario['FUNCAO']==1)].sample(n=1).index[0]
                 dados_funcionario=dados_funcionario.drop(valor)
                 teste_vetor.append(valor+1)
     for j in range(2):
