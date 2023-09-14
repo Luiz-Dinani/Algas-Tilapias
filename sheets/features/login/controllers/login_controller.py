@@ -1,42 +1,24 @@
-from flask import Flask, request, jsonify
-import features.login.services.login_service as _login_service
-from features.login.models.RequestLoginModel import RequestLoginModel
-from Google_sheets import gerarPlanilha as gp
+from flask import request, jsonify
+from flask_restx import Resource
+from features.login.services import login_service
+from features.login.models.RequestLoginModel import request_login_resource, RequestLoginModel
+from app import api
 
-app = Flask(__name__)
-@app.after_request
-def after_request(response):
-    response.headers["Access-Control-Allow-Origin"] = "*" 
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS, PUT, DELETE"
-    response.headers["Access-Control-Allow-Headers"] = "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization"
-    return response
-@app.route("/login", methods=["POST"])
-def login():
-    data = request.get_json()
-    if data["email"] is None or data["senha"] is None:
-        return jsonify({"erro": "Campos de email e senha são obrigatórios"}), 400
+ns = api.namespace('login', description='Operações de login')
 
-    login_model = RequestLoginModel(data["email"], data["senha"])
+@ns.route("/")
+class LoginResource(Resource):
+    @api.expect(request_login_resource)
+    def post(self):
+        data = request.get_json()
+        email, senha = data.get("email"), data.get("senha")
+        if data is None or email is None or senha is None:
+            return jsonify({"erro": "Campos de email e senha são obrigatórios"}), 400
 
-    resultado = _login_service.login(login_model)
-    if len(resultado) > 0:
-        return resultado, 200
-    else:
-        return '', 404
-    # if resultado[0][0]>0:
-    #     return "A"
-    # else:
-    #     resultado = coletaDados(f"select count(*), funcao from funcionario where email = '{email}' and senha = '{senha}';")
-    #     if resultado[0][0]>0:
-    #         return resultado[0][1]
-    #     else:
-    #         return 'erro'
-        
-#
-# funcao('atacado_peixe@atacado.com','atacado_peixe')
+        login_model = RequestLoginModel(email, senha)
+        resultado = login_service.login(login_model)
+        if resultado is not None:
+            return resultado.__dict__, 200
+        else:
+            return "", 404
 
-@app.route("/planilha/<idCliente>")
-def obterPlanilha(idCliente):
-    resultado = _login_service.coletarDadosPlanilha(idCliente)
-    return gp(resultado.empresa[0], 'A', resultado.drop(columns=['empresa', 'idMonitoracaoCiclo']))

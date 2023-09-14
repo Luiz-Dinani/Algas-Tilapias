@@ -1,0 +1,5 @@
+pyotp
+gspread
+oauth2client
+flask-restx
+pandas

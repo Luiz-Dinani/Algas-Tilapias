@@ -1,6 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import pandas as pd
+
 import webbrowser
 new=2
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
