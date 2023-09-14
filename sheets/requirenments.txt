@@ -1,5 +1,9 @@
+flask
 pyotp
 gspread
 oauth2client
 flask-restx
 pandas
+boto3
+mysql-connector-python
+qrcode
