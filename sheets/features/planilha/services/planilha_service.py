@@ -3,7 +3,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import webbrowser
 def coletarDadosPlanilha(idCliente):
-    resultado = _context.coletaDados(idCliente)
+    resultado = _context.coleta_dados_monitoramento_tanque_funcionario(idCliente)
     return resultado
 
 def gerarClient():
@@ -14,7 +14,7 @@ def gerarClient():
 
 def gerarPlanilha(id_usuario):
     resultado = coletarDadosPlanilha(id_usuario)
-    nome, funcao, df = resultado.empresa[0], 'A', resultado.drop(columns=['empresa', 'idMonitoracaoCiclo'])
+    nome, funcao, df = resultado.empresa[0], 'A', resultado.drop(columns=['idMonitoracaoCiclo'])
     new = 2
     client = gerarClient()
 

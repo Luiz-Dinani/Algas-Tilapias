@@ -34,23 +34,14 @@ def login(login: RequestLoginModel):
     except mysql.connector.Error as e:
         print("Erro ao conectar com o MySQL", e)
 
-#TODO Remover a função de Obter Credenciais e fazer o select com join funcionar: SELECT * from monitoracaoCiclo where fkTanque in (select idTanque from tanque where fkFuncionario in (select idFuncionario from funcionario where fkEmpresa = l_idEmpresa)) order by fkTanque;
-def obterCredenciais(idCliente):
-    try:
-        db = conectarBancoDeDados()
-        cursor = criarCursor(db)
-        resultado = cursor.execute(f"select email, senha from funcionario where idFuncionario = {idCliente}")
-        credenciais = RequestLoginModel(resultado[0], resultado[1])
-        return credenciais
-    except mysql.connector.Error as e:
-        raise e
-
-def coletaDados(idCliente):
+def coleta_dados_monitoramento_tanque_funcionario(id_funcionario):
     try:
         db = conectarBancoDeDados()
         with db:
-            credenciais = obterCredenciais(idCliente)
-            select = f"select *, (select nomeEmpresa from empresa where email={credenciais.email} and senha={credenciais.senha}) as empresa from monitoracaoCiclo where fkTanque in (select idTanque from tanque where fkFuncionario in (select idFuncionario from funcionario where fkEmpresa=(select idEmpresa from empresa where email={credenciais.email} and senha={credenciais.senha}))) order by fkTanque asc"
+            select = f"""SELECT mon.* from monitoracaoCiclo mon join
+                                          tanque on mon.fkTanque = tanque.idTanque
+                        where  fkFuncionario = {id_funcionario}; 
+                     """
             return pd.read_sql(select, db)
     except mysql.connector.Error as e:
         print("Erro ao conectar com o MySQL", e)
