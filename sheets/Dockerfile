@@ -13,7 +13,7 @@ COPY . .
 
 # Exponha as portas em que a aplicação Flask está sendo executada (por padrão, porta 5000)
 EXPOSE 5000
-EXPOSE 8080
 
 # Comando para iniciar a aplicação quando o contêiner for iniciado
-CMD ["python3", "-m", "flask", "run", "-h" "0.0.0.0" "-p" "8080"]
+CMD ["python3", "-m", "flask", "run", "-h", "0.0.0.0"]
+
