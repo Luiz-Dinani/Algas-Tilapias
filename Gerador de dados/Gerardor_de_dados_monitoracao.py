@@ -256,7 +256,7 @@ def gerarDados():
         pesoMedioPeixes = pesoMedioPeixes if pesoMedioPeixes < 800 else pesoMedioPeixes + r.uniform(-5, -15)
         amonia = 0 if amonia < 0 else amonia
 
-        if(x % 111 == 0): #Acabou o ciclo de engorda, os peixes sao removidos, a agua recebe manutencao, fica em repouso e sao colocados novos peixes
+        if(x % 90 == 0): #Acabou o ciclo de engorda, os peixes sao removidos, a agua recebe manutencao, fica em repouso e sao colocados novos peixes
             amonia = 0.00
             qualidadeAgua = 4
             qtdPeixes = 15_000
