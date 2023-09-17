@@ -1,3 +1,5 @@
+python3 atualizarAWSCredentials.py
+
 docker stop samaka-api-ct
 docker rm samaka-api-ct
 
