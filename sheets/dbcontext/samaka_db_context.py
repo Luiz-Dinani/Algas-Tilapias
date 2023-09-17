@@ -37,6 +37,7 @@ def login(login: RequestLoginModel):
 def coleta_dados_monitoramento_tanque_funcionario(id_funcionario):
     try:
         db = conectarBancoDeDados()
+        criarCursor(db)
         with db:
             select = f"""SELECT mon.* from monitoracaoCiclo mon join
                                           tanque on mon.fkTanque = tanque.idTanque
