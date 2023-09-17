@@ -13,7 +13,7 @@ def obterKeyBase2FA():
     region_name = "us-east-1"
 
     session = boto3.session.Session()
-    with open('appsetings.json', 'r') as arquivo_json:
+    with open('appsettings.json', 'r') as arquivo_json:
         appsettings = json.load(arquivo_json)
         credenciais = appsettings["credenciais-aws"]
 
