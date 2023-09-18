@@ -10,10 +10,25 @@ def main():
     if atualizar.upper() == "N":
         return
 
-    aws_access_key_id = input("Insira a aws_access_key_id: ")
-    aws_secret_access_key = input("Insira a aws_secret_access_key: ")
-    aws_session_token = input("Insira a aws_session_token: ")
+    aws_cli = ""
 
+    while True:
+        user_input = input("Insira TODO o conteúdo do AWS_CLI: ")
+
+        if user_input.endswith("="):
+            aws_cli += user_input
+            break
+        
+        aws_cli += user_input
+
+    aws_cli = aws_cli.replace("[default]", "")
+    aws_cli = aws_cli.replace("aws_access_key_id=", " ")
+    aws_cli = aws_cli.replace("aws_secret_access_key=", " ")
+    aws_cli = aws_cli.replace("aws_session_token=", " ")
+    aws_cli = aws_cli.split()
+  
+    aws_access_key_id, aws_secret_access_key, aws_session_token = aws_cli[0], aws_cli[1], aws_cli[2]
+     
     credenciais = {
         "credenciais-aws": {
             "aws_access_key_id": aws_access_key_id,
