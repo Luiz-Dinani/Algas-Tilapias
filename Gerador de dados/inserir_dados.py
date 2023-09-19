@@ -45,7 +45,7 @@ for dados in open('funcionario.csv', 'r', encoding='UTF-8'):
 insert = insert[:-2]
 insert += ';'
 inserirDados(insert)
-insert = 'insert into tanque (fkFuncionario,cep,cidade,bairro,rua,estado) values \n'
+insert = 'insert into tanque (fkFuncionario,fkEmpresa,cep,cidade,bairro,rua,estado) values \n'
 def anonimizar_string(texto):
     texto_separado = texto.split()
     len_texto = len(texto_separado)
@@ -65,13 +65,12 @@ def anonimizar_endereco(cep, cidade, bairro, rua):
     cidade_anonimizado = anonimizar_string(cidade)
     bairro_anonimizado = anonimizar_string(bairro)
     rua_anonimizado = anonimizar_string(rua)
-    estado_anonimizado = 'XX'
-    return cep_anonimizado, cidade_anonimizado, bairro_anonimizado, rua_anonimizado, estado_anonimizado
+    return cep_anonimizado, cidade_anonimizado, bairro_anonimizado, rua_anonimizado
 for dados in open('dados.csv', 'r', encoding='UTF-8'):
     info = dados.split(';')
     cep, cidade, bairro, rua, estado = info[0], info[1], info[2], info[3], info[4]
-    cep_anonimizado, cidade_anonimizado, bairro_anonimizado, rua_anonimizado, estado_anonimizado = anonimizar_endereco(cep, cidade, bairro, rua)
-    insert += f"({int(info[5])},'{cep_anonimizado.zfill(8)}','{cidade_anonimizado}','{bairro_anonimizado}','{rua_anonimizado}','{estado_anonimizado}'),\n"
+    cep_anonimizado, cidade_anonimizado, bairro_anonimizado, rua_anonimizado = anonimizar_endereco(cep, cidade, bairro, rua)
+    insert += f"({int(info[5])},{int(info[6])},'{cep_anonimizado.zfill(8)}','{cidade_anonimizado}','{bairro_anonimizado}','{rua_anonimizado}','{estado}'),\n"
 insert = insert[:-2]
 insert += ';'
 inserirDados(insert)

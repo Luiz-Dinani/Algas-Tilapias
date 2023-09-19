@@ -23,6 +23,7 @@ dados_funcionario.columns=['NOME','CPF','GENERO','IDADE','EMAIL','SENHA','EMP','
 matriz_empresa = [[3,3,3,3,2,2,2,1,0,0],	[3,2,2,3,3,2,1,1,1,0],	[2,2,2,1,1,1,1,1,1,1],	[1,1,1,0,0,0,0,0,0,0],	[1,1,0,0,0,0,0,0,0,0]]
 strCsv_endereco=''
 teste_vetor = []
+vetor_empresa = []
 for i in range(5):
     for x in range(10):
         if matriz_empresa[i][x]!=0:
@@ -30,9 +31,11 @@ for i in range(5):
                 valor = dados_funcionario.loc[(dados_funcionario['EMP']==x+1) & (dados_funcionario['FUNCAO']==1)].sample(n=1).index[0]
                 dados_funcionario=dados_funcionario.drop(valor)
                 teste_vetor.append(valor+1)
+                vetor_empresa.append(x+1)
     for j in range(2):
         strCsv_endereco+=dados_cliente.loc[dados_cliente['ESTADO']==matriz_regioes[i][j]].sample(n=matriz_estados[i][j]).to_csv(index=False, sep=';', header=False)
 open('dados.csv', 'w', encoding='UTF-8').write(strCsv_endereco)
 dados = pd.read_csv('dados.csv', encoding='UTF-8', sep=';', header=None)
 dados['Funcionario'] = teste_vetor
+dados['Empresa'] = vetor_empresa
 dados.to_csv('dados.csv', index=False, encoding='UTF-8', sep=';', header=False)

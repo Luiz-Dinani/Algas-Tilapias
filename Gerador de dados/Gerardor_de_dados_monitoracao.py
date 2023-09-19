@@ -150,7 +150,7 @@ def gerarDados():
     hoje = datetime.date.today()
     data = datetime.date(2023,1,1)
     delta = hoje - data
-    for x in range(1, delta.days+1, 1):
+    for x in range(1, delta.days+2, 1):
         day = init_day + datetime.timedelta(days=+x)
         # Divisor de período - Anual
         y = x % 367

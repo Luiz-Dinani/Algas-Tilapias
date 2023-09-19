@@ -39,9 +39,9 @@ def coleta_dados_monitoramento_tanque_funcionario(id_funcionario):
         db = conectarBancoDeDados()
         criarCursor(db)
         with db:
-            select = f"""SELECT mon.* from monitoracaoCiclo mon join
-                                          tanque on mon.fkTanque = tanque.idTanque
-                        where  fkFuncionario = {id_funcionario}; 
+            select = f"""select mon.*, fun.fkCargo from monitoracaoCiclo mon 
+            join tanque tan on mon.fkTanque = tan.idTanque join funcionario fun 
+            on tan.fkFuncionario=fun.idFuncionario where fun.idFuncionario = {id_funcionario}; 
                      """
             return pd.read_sql(select, db)
     except mysql.connector.Error as e:
