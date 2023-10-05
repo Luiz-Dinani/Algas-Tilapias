@@ -4,5 +4,5 @@ from PIL import Image
 import pytesseract
 # Extraindo o texto da imagem
 print('A')
-print( pytesseract.image_to_string( Image.open('teste-com-python-ocr.jpg'), lang='por') )
+print( pytesseract.image_to_string( Image.open('teste-com-python-ocr.jpg')) )
 print('F')
