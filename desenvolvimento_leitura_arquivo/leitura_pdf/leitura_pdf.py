@@ -1,19 +1,16 @@
-import PyPDF2
-
-# Abra o arquivo PDF em modo de leitura binária
-pdf_file = open('Analise de caso.pdf', 'rb')
-
-# Crie um objeto PyPDF2.PdfReader para ler o arquivo PDF
-pdf_reader = PyPDF2.PdfReader(pdf_file)
-
-# Obtenha o número de páginas no arquivo PDF
-num_pages = len(pdf_reader.pages)
-
-# Loop através de todas as páginas e imprima o conteúdo de cada página
-for page_num in range(num_pages):
-    page = pdf_reader.pages[page_num]
-    page_text = page.extract_text()
-    print(page_text)
-
-# Feche o arquivo PDF após a leitura
-pdf_file.close()
+import fitz
+import io
+from PIL import Image
+from PIL import Image
+import pytesseract
+pdf_document = fitz.open('Biomassa.pdf')
+page = pdf_document.load_page(6)
+image_list = page.get_images(full=True)
+for img_index, img in enumerate(image_list):
+    xref = img[0]
+    base_image = pdf_document.extract_image(xref)
+    image_data = base_image["image"]
+    image = Image.open(io.BytesIO(image_data))
+    if img_index == 1:
+        print(pytesseract.image_to_string(image))
+pdf_document.close()
