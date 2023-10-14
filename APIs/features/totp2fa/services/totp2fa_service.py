@@ -7,15 +7,13 @@ import qrcode
 import io
 from botocore.exceptions import ClientError
 import dbcontext.samaka_db_context as _context
-
+from commons import commons
 def obterKeyBase2FA():
     secret_name = "dev/login/2FA"
     region_name = "us-east-1"
 
     session = boto3.session.Session()
-    with open('appsettings.json', 'r') as arquivo_json:
-        appsettings = json.load(arquivo_json)
-        credenciais = appsettings["credenciais-aws"]
+    credenciais = commons.obter_arquivo_ou_secao_json("appsettings", "credenciais-aws")
 
     client = session.client(
         service_name='secretsmanager',
