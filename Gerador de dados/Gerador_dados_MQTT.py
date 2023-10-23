@@ -254,12 +254,12 @@ def main():
             if i%90==0:
                 ciclo+=1
                 dias=89
-            strTexto+=f"{ciclo};{dias};"
+            strTexto+=f"{ciclo},{dias},"
             for j in vetorDados:
                 if(type(j[i]) is datetime.date):
-                    strTexto+=f"{j[i]};{tanques+1}\n"
+                    strTexto+=f"{j[i]},{tanques+1}\n"
                 else:
-                    strTexto+=f"{j[i]};"
+                    strTexto+=f"{j[i]},"
             dias-=1
         awsmqtt(strTexto, tanques+1)
     desligar()
