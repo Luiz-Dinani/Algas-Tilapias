@@ -1,6 +1,6 @@
-pip install pandas gender_guesser
-python3 coleta_dados.py
-python3 Clientes_Tanque.py
-python3 cep.py
-python3 inserir_dados.py
-python3 Algas_Final.py
+pip install pandas gender_guesser hash
+
+python3 Gerador\ de\ dados/Gerar_funcionario.py
+python3 Gerador\ de\ dados/cep.py
+python3 Gerador\ de\ dados/inserir_dados.py
+python3 Gerador\ de\ dados/Gerardor_de_dados_monitoracao.py

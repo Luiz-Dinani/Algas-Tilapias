@@ -5,7 +5,7 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://database-1.cucfdybb1rps.us-east-1.rds.amazonaws.com:3306/samaka</jdbc-url>
+      <jdbc-url>jdbc:mysql://samaka-instance.cstm1xyotn78.us-east-1.rds.amazonaws.com:3306/</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
