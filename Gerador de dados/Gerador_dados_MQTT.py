@@ -245,7 +245,7 @@ def geracao_vis(inicio, fim):
     return round(results / len(vis_total), 1)
 
 def main():
-    for tanques in range(55):
+    for tanques in range(25):
         strTexto=''
         vetorDados = gerarDados()
         ciclo = 0
