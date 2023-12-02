@@ -4,7 +4,7 @@ import requests as req
 import xml.etree.ElementTree as ET
 from services_references.previsao_tempo.models.previsao_tempo_model import PrevisaoTempoModel
 
-def get_temperatura(nome_cidade, uf) -> list[PrevisaoTempoModel] | None:
+def get_temperatura(nome_cidade: str, uf: str) -> list[PrevisaoTempoModel] | None:
     id_cidade = localidade_service.get_localidade(nome_cidade, uf)
     if (id_cidade is None):
         return None
