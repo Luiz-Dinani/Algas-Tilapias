@@ -37,9 +37,11 @@ def main():
         }
     }
     
-    with open("appsettings.json", "w") as arquivo_json:
+    with open("appsettings.json", "r") as arquivo_json:
         #substitui o conteúdo do appsettings.json pelas novas credenciais
-        json.dump(credenciais, arquivo_json, indent=4)
+        appSettings = json.load(arquivo_json)
+        appSettings["credenciais-aws"] = credenciais
+        json.dump(appSettings, arquivo_json, indent=4)
     print("Conteúdo do arquivo appsettings.json foi atualizado com sucesso!")
 
 main()
